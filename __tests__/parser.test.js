@@ -11,6 +11,14 @@ describe('Parser Tests', () => {
       expect(parse("0")).toBe(0);
       expect(parse("123")).toBe(123);
     });
+
+    test('should parse floats and scientific notation', () => {
+      expect(parse("2.35")).toBeCloseTo(2.35);
+      expect(parse("2.35e-3")).toBeCloseTo(0.00235);
+      expect(parse("2.35e+3")).toBeCloseTo(2350);
+      expect(parse("2.35E-3")).toBeCloseTo(0.00235);
+      expect(parse("23")).toBe(23); // integer still works
+    });
   });
 
   describe('Basic arithmetic operations', () => {
@@ -70,6 +78,12 @@ describe('Parser Tests', () => {
       expect(parse("1+2")).toBe(3);  // no spaces
     });
 
+    test('should ignore single-line comments', () => {
+      expect(parse("1 + 2 // add two numbers")).toBe(3);
+      expect(parse("5//comment")).toBe(5);
+      expect(parse("2 * 3 // 6\n+ 1")).toBe(7); // comment ends at newline
+    });
+
     test('should handle zero in operations', () => {
       expect(parse("0 + 0")).toBe(0);
       expect(parse("0 - 0")).toBe(0);
@@ -110,7 +124,8 @@ describe('Parser Tests', () => {
       expect(() => parse("3 +")).toThrow();
       expect(() => parse("+ 3")).toThrow();
       expect(() => parse("3 + + 4")).toThrow();
-      expect(() => parse("3.5")).toThrow(); // Only integers are supported
+      // decimal numbers are now supported, so this should not throw
+      expect(parse("3.5")).toBeCloseTo(3.5);
     });
 
     test('should handle incomplete expressions', () => {
