@@ -4,34 +4,80 @@
 \s+                                        { /* skip whitespace */;          }
 "//"[^\n]*                                 { /* skip single-line comment */; }
 [0-9]+(\.[0-9]+)?([eE][+-]?[0-9]+)?        { return 'NUMBER';                }
-"**"                                       { return 'OP';                    }
-[-+*/]                                     { return 'OP';                    }
+"**"                                       { return '**';                    }
+"↑"                                        { return '↑';                     }
+"+"                                        { return '+';                     }
+"-"                                        { return '-';                     }
+"*"                                        { return '*';                     }
+"/"                                        { return '/';                     }
 <<EOF>>                                    { return 'EOF';                   }
 .                                          { return 'INVALID';               }
 /lex
 
+
 /* Parser */
-%start expressions
+%start L
 %token NUMBER
+
 %%
 
-expressions
-    : expression EOF
-        { return $expression; }
+L
+    : E EOF
+        { return $E; }
     ;
 
-expression
-    : expression OP term
-        { $$ = operate($OP, $expression, $term); }
-    | term
-        { $$ = $term; }
+E
+    : E opad T
+        { $$ = operate($opad, $1, $3); }
+    | T
+        { $$ = $1; }
     ;
 
-term
+T
+    : T opmu R
+        { $$ = operate($opmu, $1, $3); }
+    | R
+        { $$ = $1; }
+    ;
+
+R
+    : F opow R
+        { $$ = operate($opow, $1, $3); }
+    | F
+        { $$ = $1; }
+    ;
+
+F
     : NUMBER
-        { $$ = Number(yytext); }
+        { $$ = convert($1); }
     ;
+
+opad
+    : '+'
+        { $$ = '+'; }
+    | '-'
+        { $$ = '-'; }
+    ;
+
+opmu
+    : '*'
+        { $$ = '*'; }
+    | '/'
+        { $$ = '/'; }
+    ;
+
+opow
+    : '**'
+        { $$ = '**'; }
+    | '↑'
+        { $$ = '↑'; }
+    ;
+
 %%
+
+function convert(value) {
+    return Number(value);
+}
 
 function operate(op, left, right) {
     switch (op) {
@@ -39,6 +85,7 @@ function operate(op, left, right) {
         case '-': return left - right;
         case '*': return left * right;
         case '/': return left / right;
-        case '**': return Math.pow(left, right);
+        case '**':
+        case '↑': return Math.pow(left, right);
     }
 }
