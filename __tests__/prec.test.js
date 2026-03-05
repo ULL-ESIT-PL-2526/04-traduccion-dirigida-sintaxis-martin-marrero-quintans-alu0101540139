@@ -179,5 +179,10 @@ describe('Parser Failing Tests', () => {
       expect(parse("1.0 + 2.0 * 3.0 ** 2.0")).toBeCloseTo(19.0); // 1.0 + (2.0 * (3.0 ** 2.0)) = 1.0 + 18.0 = 19.0
       expect(parse("2.0 ↑ 3.0 * 2.0 + 1.5")).toBeCloseTo(17.5); // ((2.0 ↑ 3.0) * 2.0) + 1.5 = 16.0 + 1.5 = 17.5
     });
-  });
+
+    test('should handle mixing ** and ↑ operators', () => {
+      expect(parse("2 ** 3 ↑ 2")).toBe(512); // 2 ** (3 ↑ 2) = 2 ** 9 = 512
+      expect(parse("2 ↑ 3 ** 2")).toBe(512); // 2 ↑ (3 ** 2) = 2 ↑ 9 = 512
+      expect(parse("3 ** 2 ↑ 2")).toBe(81); // 3 ** (2 ↑ 2) = 3 ** 4 = 81
+    });  });
 });
