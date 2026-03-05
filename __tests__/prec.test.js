@@ -184,5 +184,32 @@ describe('Parser Failing Tests', () => {
       expect(parse("2 ** 3 ↑ 2")).toBe(512); // 2 ** (3 ↑ 2) = 2 ** 9 = 512
       expect(parse("2 ↑ 3 ** 2")).toBe(512); // 2 ↑ (3 ** 2) = 2 ↑ 9 = 512
       expect(parse("3 ** 2 ↑ 2")).toBe(81); // 3 ** (2 ↑ 2) = 3 ** 4 = 81
-    });  });
+    });
+  });
+
+  describe('Parenthesized expressions', () => {
+    test('should handle parenthesized expressions overriding precedence', () => {
+      expect(parse("( 2 + 3 ) * 4")).toBe(20); // (2 + 3) * 4 = 5 * 4 = 20
+      expect(parse("2 * ( 3 + 4 )")).toBe(14); // 2 * (3 + 4) = 2 * 7 = 14
+      expect(parse("( 10 - 5 ) * 2")).toBe(10); // (10 - 5) * 2 = 5 * 2 = 10
+    });
+
+    test('should handle nested parentheses', () => {
+      expect(parse("( ( 2 + 3 ) * 4 )")).toBe(20); // ((2 + 3) * 4) = 20
+      expect(parse("( 2 + ( 3 * 4 ) )")).toBe(14); // (2 + (3 * 4)) = 14
+      expect(parse("( ( 10 - 5 ) / 5 )")).toBe(1); // ((10 - 5) / 5) = 1
+    });
+
+    test('should handle parentheses with exponentiation', () => {
+      expect(parse("( 2 + 3 ) ** 2")).toBe(25); // (2 + 3) ** 2 = 5 ** 2 = 25
+      expect(parse("2 ** ( 2 + 1 )")).toBe(8); // 2 ** (2 + 1) = 2 ** 3 = 8
+      expect(parse("( 2 ** 3 ) + 1")).toBe(9); // (2 ** 3) + 1 = 8 + 1 = 9
+    });
+
+    test('should handle complex parenthesized expressions', () => {
+      expect(parse("( 2 + 3 ) * ( 4 - 1 )")).toBe(15); // (2 + 3) * (4 - 1) = 5 * 3 = 15
+      expect(parse("( 1 + 2 * 3 ) * 2")).toBe(14); // (1 + 2 * 3) * 2 = (1 + 6) * 2 = 7 * 2 = 14
+      expect(parse("2 * ( 3 + 4 ) - 5")).toBe(9); // 2 * (3 + 4) - 5 = 14 - 5 = 9
+    });
+  });
 });

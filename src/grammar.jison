@@ -10,6 +10,8 @@
 "-"                                        { return '-';                     }
 "*"                                        { return '*';                     }
 "/"                                        { return '/';                     }
+"("                                        { return '(';                     }
+")"                                        { return ')';                     }
 <<EOF>>                                    { return 'EOF';                   }
 .                                          { return 'INVALID';               }
 /lex
@@ -48,7 +50,9 @@ R
     ;
 
 F
-    : NUMBER
+    : '(' E ')'
+        { $$ = $2; }
+    | NUMBER
         { $$ = convert($1); }
     ;
 

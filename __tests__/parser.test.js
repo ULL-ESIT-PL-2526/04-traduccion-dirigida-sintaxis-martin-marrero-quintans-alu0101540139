@@ -257,10 +257,17 @@ describe('Parser Tests', () => {
       expect(() => parse("3 4")).toThrow(); // Missing operator
     });
 
+    test('should handle parenthesized expressions', () => {
+      expect(parse("( 5 )")).toBe(5);
+      expect(parse("( 3 + 5 )")).toBe(8);
+      expect(parse("( 2 * 4 )")).toBe(8);
+      expect(parse("2 * ( 3 + 4 )")).toBe(14); // 2 * 7 = 14
+    });
+
     test('should handle more incomplete expressions', () => {
       expect(() => parse("5 -")).toThrow();
       expect(() => parse("2 ** ")).toThrow();
-      expect(() => parse("( 5 )")).toThrow(); // Parentheses not supported yet
+      expect(() => parse("( 5")).toThrow(); // Missing closing parenthesis
     });
   });
 
