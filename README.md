@@ -1,3 +1,6 @@
+Martín José Marrero Quintans
+
+
 # Syntax Directed Translation with Jison
 
 Jison is a tool that receives as input a Syntax Directed Translation and produces as output a JavaScript parser  that executes
