@@ -211,5 +211,17 @@ describe('Parser Failing Tests', () => {
       expect(parse("( 1 + 2 * 3 ) * 2")).toBe(14); // (1 + 2 * 3) * 2 = (1 + 6) * 2 = 7 * 2 = 14
       expect(parse("2 * ( 3 + 4 ) - 5")).toBe(9); // 2 * (3 + 4) - 5 = 14 - 5 = 9
     });
+
+    test('should handle parentheses with floats', () => {
+      expect(parse("( 2.5 + 3.5 ) * 2.0")).toBeCloseTo(12.0); // (2.5 + 3.5) * 2.0 = 6.0 * 2.0 = 12.0
+      expect(parse("( 10.0 - 2.5 ) / 2.0")).toBeCloseTo(3.75); // (10.0 - 2.5) / 2.0 = 7.5 / 2.0 = 3.75
+      expect(parse("2.0 * ( 3.5 + 1.5 )")).toBeCloseTo(10.0); // 2.0 * (3.5 + 1.5) = 2.0 * 5.0 = 10.0
+    });
+
+    test('should handle parentheses with exponentiation operators', () => {
+      expect(parse("( 2 + 1 ) ↑ 2")).toBe(9); // (2 + 1) ↑ 2 = 3 ↑ 2 = 9
+      expect(parse("2 ↑ ( 1 + 2 )")).toBe(8); // 2 ↑ (1 + 2) = 2 ↑ 3 = 8
+      expect(parse("( 2 ↑ 2 ) * 3")).toBe(12); // (2 ↑ 2) * 3 = 4 * 3 = 12
+    });
   });
 });
